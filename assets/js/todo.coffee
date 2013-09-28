@@ -23,29 +23,23 @@ class TodoApp
     @$leave = $('#leave')
 
   bindEvents: ->
-    @$input.on 'keyup', (e) =>
-      @create e
-    @$todoList.on 'click', '.destroy', (e) =>
-      @destroy e.target
-    @$todoList.on 'change', '.toggle', (e) =>
-      @toggle e.target
-    @$clearCompleted.on 'click', (e) =>
-      @clearCompleted()
-    @$join.on 'click', (e) =>
-      @joinList()
-    @$leave.on 'click', (e) =>
-      @leaveList()
+    @$input.on 'keyup', (e) => @create e
+    @$todoList.on 'click', '.destroy', (e) => @destroy e.target
+    @$todoList.on  'change', '.toggle', (e) => @toggle e.target
+    @$clearCompleted.on 'click', (e) => @clearCompleted()
+    @$join.on 'click', (e) => @joinList()
+    @$leave.on 'click', (e) => @leaveList()
 
   create: (e) ->
     val = $.trim @$input.val()
     return unless e.which == 13 and val
 
-    randomId = Math.floor Math.random() * 999999
+    randomId = Math.floor Math.random()*999999
 
     newItem =
-      id: randomId
-      title: val
-      completed: false
+       id: randomId
+       title: val
+       completed: false
 
     localStorage.setObj randomId, newItem
     @socket.emit 'newItem', newItem if @socket
@@ -61,14 +55,14 @@ class TodoApp
 
   addItem: (item) ->
     html = """
-           <li #{if item.completed then 'class="completed"' else ''} data-id="#{item.id}">
-           <div class="view">
-           <input class="toggle" type="checkbox" #{if item.completed then 'checked' else ''}>
-           <label>#{item.title}</label>
-           <button class="destroy"></button>
-           </div>
-           </li>
-           """
+      <li #{if item.completed then 'class="completed"' else ''} data-id="#{item.id}">
+        <div class="view">
+          <input class="toggle" type="checkbox" #{if item.completed then 'checked' else ''}>
+          <label>#{item.title}</label>
+          <button class="destroy"></button>
+        </div>
+     </li>
+    """
     @$todoList.append html
 
   destroy: (elem) ->
@@ -84,8 +78,8 @@ class TodoApp
     localStorage.setObj(id, item)
 
   clearCompleted: ->
-    (localStorage.removeItem id for id in Object.keys(localStorage)
-    when (localStorage.getObj id).completed)
+    (localStorage.removeItem id for id in Object.keys(localStorage) \
+      when (localStorage.getObj id).completed)
     @displayItems()
 
   joinList: ->
@@ -94,8 +88,7 @@ class TodoApp
       @currentList = @$joinListName.val()
       @socket.emit 'joinList', @currentList
 
-    @socket.on 'syncItems', (items) =>
-      @syncItems(items)
+    @socket.on 'syncItems', (items) => @syncItems(items)
 
     @socket.on 'itemAdded', (item) =>
       localStorage.setObj item.id, item
